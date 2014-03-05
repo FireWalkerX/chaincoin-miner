@@ -107,7 +107,9 @@ am_minerd_OBJECTS = minerd-cpu-miner.$(OBJEXT) minerd-util.$(OBJEXT) \
 	minerd-aes_helper.$(OBJEXT) minerd-luffa_for_sse2.$(OBJEXT) \
 	minerd-shavite.$(OBJEXT) minerd-cubehash_sse2.$(OBJEXT) \
 	minerd-nist.$(OBJEXT) minerd-vector.$(OBJEXT) \
-	minerd-echo.$(OBJEXT) minerd-xcoin.$(OBJEXT)
+	minerd-echo.$(OBJEXT) minerd-blake.$(OBJEXT) \
+	minerd-hash.$(OBJEXT) minerd-hash-groestl.$(OBJEXT) \
+	minerd-xcoin.$(OBJEXT)
 minerd_OBJECTS = $(am_minerd_OBJECTS)
 minerd_DEPENDENCIES =
 minerd_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(minerd_LDFLAGS) \
@@ -237,20 +239,20 @@ distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
 distcleancheck_listfiles = find . -type f -print
-ACLOCAL = ${SHELL} /home/fabian/chaincoin-cpuminer-1.2c/missing aclocal-1.13
+ACLOCAL = ${SHELL} /home/fabian/chaincoin-miner2/missing aclocal-1.13
 ALLOCA = 
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
-AUTOCONF = ${SHELL} /home/fabian/chaincoin-cpuminer-1.2c/missing autoconf
-AUTOHEADER = ${SHELL} /home/fabian/chaincoin-cpuminer-1.2c/missing autoheader
-AUTOMAKE = ${SHELL} /home/fabian/chaincoin-cpuminer-1.2c/missing automake-1.13
+AUTOCONF = ${SHELL} /home/fabian/chaincoin-miner2/missing autoconf
+AUTOHEADER = ${SHELL} /home/fabian/chaincoin-miner2/missing autoheader
+AUTOMAKE = ${SHELL} /home/fabian/chaincoin-miner2/missing automake-1.13
 AWK = gawk
 CC = gcc -std=gnu99
 CCAS = gcc -std=gnu99
 CCASDEPMODE = depmode=gcc3
-CCASFLAGS = -msse2 -msse3 -O3
+CCASFLAGS = -m64 -Ofast -flto -march=native -funroll-loops
 CCDEPMODE = depmode=gcc3
-CFLAGS = -msse2 -msse3 -O3
+CFLAGS = -m64 -Ofast -flto -march=native -funroll-loops
 CPP = gcc -std=gnu99 -E
 CPPFLAGS = 
 CYGPATH_W = echo
@@ -275,7 +277,7 @@ LIBOBJS =
 LIBS = 
 LTLIBOBJS = 
 MAINT = #
-MAKEINFO = ${SHELL} /home/fabian/chaincoin-cpuminer-1.2c/missing makeinfo
+MAKEINFO = ${SHELL} /home/fabian/chaincoin-miner2/missing makeinfo
 MKDIR_P = /bin/mkdir -p
 OBJEXT = o
 PACKAGE = cpuminer
@@ -295,10 +297,10 @@ STRIP =
 VERSION = 2.3.2
 WS2_LIBS = 
 _libcurl_config = 
-abs_builddir = /home/fabian/chaincoin-cpuminer-1.2c
-abs_srcdir = /home/fabian/chaincoin-cpuminer-1.2c
-abs_top_builddir = /home/fabian/chaincoin-cpuminer-1.2c
-abs_top_srcdir = /home/fabian/chaincoin-cpuminer-1.2c
+abs_builddir = /home/fabian/chaincoin-miner2
+abs_srcdir = /home/fabian/chaincoin-miner2
+abs_top_builddir = /home/fabian/chaincoin-miner2
+abs_top_srcdir = /home/fabian/chaincoin-miner2
 ac_ct_CC = gcc
 am__include = include
 am__leading_dot = .
@@ -325,7 +327,7 @@ host_vendor = unknown
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/fabian/chaincoin-cpuminer-1.2c/install-sh
+install_sh = ${SHELL} /home/fabian/chaincoin-miner2/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -359,8 +361,9 @@ minerd_SOURCES = elist.h miner.h compat.h \
 		  cpu-miner.c util.c \
 		  x2/sha2.c x2/sha2-arm.S x2/sha2-x86.S x2/sha2-x64.S \
 		  x2/scrypt.c x2/scrypt-arm.S x2/scrypt-x86.S x2/scrypt-x64.S \
-		  x5/aes_helper.c x5/luffa_for_sse2.c x5/shavite.c x5/cubehash_sse2.c x5/vect128/nist.c x5/vect128/vector.c x5/echo.c \
-		  xcoin.c
+		  x5/aes_helper.c x5/luffa_for_sse2.c x5/shavite.c x5/cubehash_sse2.c x5/vect128/nist.c x5/vect128/vector.c \
+		  x5/echo.c x6/blake.c x5/echo512/ccalik/aesni/hash.c \
+		  x6/groestl/aesni/hash-groestl.c xcoin.c
 
 minerd_LDFLAGS = $(PTHREAD_FLAGS)
 minerd_LDADD = -L/usr/lib/x86_64-linux-gnu -lcurl compat/jansson/libjansson.a -lpthread 
@@ -473,9 +476,12 @@ distclean-compile:
 	-rm -f *.tab.c
 
 include ./$(DEPDIR)/minerd-aes_helper.Po
+include ./$(DEPDIR)/minerd-blake.Po
 include ./$(DEPDIR)/minerd-cpu-miner.Po
 include ./$(DEPDIR)/minerd-cubehash_sse2.Po
 include ./$(DEPDIR)/minerd-echo.Po
+include ./$(DEPDIR)/minerd-hash-groestl.Po
+include ./$(DEPDIR)/minerd-hash.Po
 include ./$(DEPDIR)/minerd-luffa_for_sse2.Po
 include ./$(DEPDIR)/minerd-nist.Po
 include ./$(DEPDIR)/minerd-scrypt-arm.Po
@@ -756,6 +762,48 @@ minerd-echo.obj: x5/echo.c
 #	$(AM_V_CC)source='x5/echo.c' object='minerd-echo.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o minerd-echo.obj `if test -f 'x5/echo.c'; then $(CYGPATH_W) 'x5/echo.c'; else $(CYGPATH_W) '$(srcdir)/x5/echo.c'; fi`
+
+minerd-blake.o: x6/blake.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT minerd-blake.o -MD -MP -MF $(DEPDIR)/minerd-blake.Tpo -c -o minerd-blake.o `test -f 'x6/blake.c' || echo '$(srcdir)/'`x6/blake.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/minerd-blake.Tpo $(DEPDIR)/minerd-blake.Po
+#	$(AM_V_CC)source='x6/blake.c' object='minerd-blake.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o minerd-blake.o `test -f 'x6/blake.c' || echo '$(srcdir)/'`x6/blake.c
+
+minerd-blake.obj: x6/blake.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT minerd-blake.obj -MD -MP -MF $(DEPDIR)/minerd-blake.Tpo -c -o minerd-blake.obj `if test -f 'x6/blake.c'; then $(CYGPATH_W) 'x6/blake.c'; else $(CYGPATH_W) '$(srcdir)/x6/blake.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/minerd-blake.Tpo $(DEPDIR)/minerd-blake.Po
+#	$(AM_V_CC)source='x6/blake.c' object='minerd-blake.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o minerd-blake.obj `if test -f 'x6/blake.c'; then $(CYGPATH_W) 'x6/blake.c'; else $(CYGPATH_W) '$(srcdir)/x6/blake.c'; fi`
+
+minerd-hash.o: x5/echo512/ccalik/aesni/hash.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT minerd-hash.o -MD -MP -MF $(DEPDIR)/minerd-hash.Tpo -c -o minerd-hash.o `test -f 'x5/echo512/ccalik/aesni/hash.c' || echo '$(srcdir)/'`x5/echo512/ccalik/aesni/hash.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/minerd-hash.Tpo $(DEPDIR)/minerd-hash.Po
+#	$(AM_V_CC)source='x5/echo512/ccalik/aesni/hash.c' object='minerd-hash.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o minerd-hash.o `test -f 'x5/echo512/ccalik/aesni/hash.c' || echo '$(srcdir)/'`x5/echo512/ccalik/aesni/hash.c
+
+minerd-hash.obj: x5/echo512/ccalik/aesni/hash.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT minerd-hash.obj -MD -MP -MF $(DEPDIR)/minerd-hash.Tpo -c -o minerd-hash.obj `if test -f 'x5/echo512/ccalik/aesni/hash.c'; then $(CYGPATH_W) 'x5/echo512/ccalik/aesni/hash.c'; else $(CYGPATH_W) '$(srcdir)/x5/echo512/ccalik/aesni/hash.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/minerd-hash.Tpo $(DEPDIR)/minerd-hash.Po
+#	$(AM_V_CC)source='x5/echo512/ccalik/aesni/hash.c' object='minerd-hash.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o minerd-hash.obj `if test -f 'x5/echo512/ccalik/aesni/hash.c'; then $(CYGPATH_W) 'x5/echo512/ccalik/aesni/hash.c'; else $(CYGPATH_W) '$(srcdir)/x5/echo512/ccalik/aesni/hash.c'; fi`
+
+minerd-hash-groestl.o: x6/groestl/aesni/hash-groestl.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT minerd-hash-groestl.o -MD -MP -MF $(DEPDIR)/minerd-hash-groestl.Tpo -c -o minerd-hash-groestl.o `test -f 'x6/groestl/aesni/hash-groestl.c' || echo '$(srcdir)/'`x6/groestl/aesni/hash-groestl.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/minerd-hash-groestl.Tpo $(DEPDIR)/minerd-hash-groestl.Po
+#	$(AM_V_CC)source='x6/groestl/aesni/hash-groestl.c' object='minerd-hash-groestl.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o minerd-hash-groestl.o `test -f 'x6/groestl/aesni/hash-groestl.c' || echo '$(srcdir)/'`x6/groestl/aesni/hash-groestl.c
+
+minerd-hash-groestl.obj: x6/groestl/aesni/hash-groestl.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT minerd-hash-groestl.obj -MD -MP -MF $(DEPDIR)/minerd-hash-groestl.Tpo -c -o minerd-hash-groestl.obj `if test -f 'x6/groestl/aesni/hash-groestl.c'; then $(CYGPATH_W) 'x6/groestl/aesni/hash-groestl.c'; else $(CYGPATH_W) '$(srcdir)/x6/groestl/aesni/hash-groestl.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/minerd-hash-groestl.Tpo $(DEPDIR)/minerd-hash-groestl.Po
+#	$(AM_V_CC)source='x6/groestl/aesni/hash-groestl.c' object='minerd-hash-groestl.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o minerd-hash-groestl.obj `if test -f 'x6/groestl/aesni/hash-groestl.c'; then $(CYGPATH_W) 'x6/groestl/aesni/hash-groestl.c'; else $(CYGPATH_W) '$(srcdir)/x6/groestl/aesni/hash-groestl.c'; fi`
 
 minerd-xcoin.o: xcoin.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT minerd-xcoin.o -MD -MP -MF $(DEPDIR)/minerd-xcoin.Tpo -c -o minerd-xcoin.o `test -f 'xcoin.c' || echo '$(srcdir)/'`xcoin.c

@@ -159,20 +159,20 @@ am__define_uniq_tagged_files = \
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-ACLOCAL = ${SHELL} /home/fabian/chaincoin-cpuminer-1.2c/missing aclocal-1.13
+ACLOCAL = ${SHELL} /home/fabian/chaincoin-miner2/missing aclocal-1.13
 ALLOCA = 
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
-AUTOCONF = ${SHELL} /home/fabian/chaincoin-cpuminer-1.2c/missing autoconf
-AUTOHEADER = ${SHELL} /home/fabian/chaincoin-cpuminer-1.2c/missing autoheader
-AUTOMAKE = ${SHELL} /home/fabian/chaincoin-cpuminer-1.2c/missing automake-1.13
+AUTOCONF = ${SHELL} /home/fabian/chaincoin-miner2/missing autoconf
+AUTOHEADER = ${SHELL} /home/fabian/chaincoin-miner2/missing autoheader
+AUTOMAKE = ${SHELL} /home/fabian/chaincoin-miner2/missing automake-1.13
 AWK = gawk
 CC = gcc -std=gnu99
 CCAS = gcc -std=gnu99
 CCASDEPMODE = depmode=gcc3
-CCASFLAGS = -msse2 -msse3 -O3
+CCASFLAGS = -m64 -Ofast -flto -march=native -funroll-loops
 CCDEPMODE = depmode=gcc3
-CFLAGS = -msse2 -msse3 -O3
+CFLAGS = -m64 -Ofast -flto -march=native -funroll-loops
 CPP = gcc -std=gnu99 -E
 CPPFLAGS = 
 CYGPATH_W = echo
@@ -197,7 +197,7 @@ LIBOBJS =
 LIBS = 
 LTLIBOBJS = 
 MAINT = #
-MAKEINFO = ${SHELL} /home/fabian/chaincoin-cpuminer-1.2c/missing makeinfo
+MAKEINFO = ${SHELL} /home/fabian/chaincoin-miner2/missing makeinfo
 MKDIR_P = /bin/mkdir -p
 OBJEXT = o
 PACKAGE = cpuminer
@@ -217,10 +217,10 @@ STRIP =
 VERSION = 2.3.2
 WS2_LIBS = 
 _libcurl_config = 
-abs_builddir = /home/fabian/chaincoin-cpuminer-1.2c/compat/jansson
-abs_srcdir = /home/fabian/chaincoin-cpuminer-1.2c/compat/jansson
-abs_top_builddir = /home/fabian/chaincoin-cpuminer-1.2c
-abs_top_srcdir = /home/fabian/chaincoin-cpuminer-1.2c
+abs_builddir = /home/fabian/chaincoin-miner2/compat/jansson
+abs_srcdir = /home/fabian/chaincoin-miner2/compat/jansson
+abs_top_builddir = /home/fabian/chaincoin-miner2
+abs_top_srcdir = /home/fabian/chaincoin-miner2
 ac_ct_CC = gcc
 am__include = include
 am__leading_dot = .
@@ -247,7 +247,7 @@ host_vendor = unknown
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/fabian/chaincoin-cpuminer-1.2c/install-sh
+install_sh = ${SHELL} /home/fabian/chaincoin-miner2/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale

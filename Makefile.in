@@ -107,7 +107,9 @@ am_minerd_OBJECTS = minerd-cpu-miner.$(OBJEXT) minerd-util.$(OBJEXT) \
 	minerd-aes_helper.$(OBJEXT) minerd-luffa_for_sse2.$(OBJEXT) \
 	minerd-shavite.$(OBJEXT) minerd-cubehash_sse2.$(OBJEXT) \
 	minerd-nist.$(OBJEXT) minerd-vector.$(OBJEXT) \
-	minerd-echo.$(OBJEXT) minerd-xcoin.$(OBJEXT)
+	minerd-echo.$(OBJEXT) minerd-blake.$(OBJEXT) \
+	minerd-hash.$(OBJEXT) minerd-hash-groestl.$(OBJEXT) \
+	minerd-xcoin.$(OBJEXT)
 minerd_OBJECTS = $(am_minerd_OBJECTS)
 minerd_DEPENDENCIES =
 minerd_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(minerd_LDFLAGS) \
@@ -359,8 +361,9 @@ minerd_SOURCES = elist.h miner.h compat.h \
 		  cpu-miner.c util.c \
 		  x2/sha2.c x2/sha2-arm.S x2/sha2-x86.S x2/sha2-x64.S \
 		  x2/scrypt.c x2/scrypt-arm.S x2/scrypt-x86.S x2/scrypt-x64.S \
-		  x5/aes_helper.c x5/luffa_for_sse2.c x5/shavite.c x5/cubehash_sse2.c x5/vect128/nist.c x5/vect128/vector.c x5/echo.c \
-		  xcoin.c
+		  x5/aes_helper.c x5/luffa_for_sse2.c x5/shavite.c x5/cubehash_sse2.c x5/vect128/nist.c x5/vect128/vector.c \
+		  x5/echo.c x6/blake.c x5/echo512/ccalik/aesni/hash.c \
+		  x6/groestl/aesni/hash-groestl.c xcoin.c
 
 minerd_LDFLAGS = $(PTHREAD_FLAGS)
 minerd_LDADD = @LIBCURL@ @JANSSON_LIBS@ @PTHREAD_LIBS@ @WS2_LIBS@
@@ -473,9 +476,12 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/minerd-aes_helper.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/minerd-blake.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/minerd-cpu-miner.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/minerd-cubehash_sse2.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/minerd-echo.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/minerd-hash-groestl.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/minerd-hash.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/minerd-luffa_for_sse2.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/minerd-nist.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/minerd-scrypt-arm.Po@am__quote@
@@ -756,6 +762,48 @@ minerd-echo.obj: x5/echo.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='x5/echo.c' object='minerd-echo.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o minerd-echo.obj `if test -f 'x5/echo.c'; then $(CYGPATH_W) 'x5/echo.c'; else $(CYGPATH_W) '$(srcdir)/x5/echo.c'; fi`
+
+minerd-blake.o: x6/blake.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT minerd-blake.o -MD -MP -MF $(DEPDIR)/minerd-blake.Tpo -c -o minerd-blake.o `test -f 'x6/blake.c' || echo '$(srcdir)/'`x6/blake.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/minerd-blake.Tpo $(DEPDIR)/minerd-blake.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='x6/blake.c' object='minerd-blake.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o minerd-blake.o `test -f 'x6/blake.c' || echo '$(srcdir)/'`x6/blake.c
+
+minerd-blake.obj: x6/blake.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT minerd-blake.obj -MD -MP -MF $(DEPDIR)/minerd-blake.Tpo -c -o minerd-blake.obj `if test -f 'x6/blake.c'; then $(CYGPATH_W) 'x6/blake.c'; else $(CYGPATH_W) '$(srcdir)/x6/blake.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/minerd-blake.Tpo $(DEPDIR)/minerd-blake.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='x6/blake.c' object='minerd-blake.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o minerd-blake.obj `if test -f 'x6/blake.c'; then $(CYGPATH_W) 'x6/blake.c'; else $(CYGPATH_W) '$(srcdir)/x6/blake.c'; fi`
+
+minerd-hash.o: x5/echo512/ccalik/aesni/hash.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT minerd-hash.o -MD -MP -MF $(DEPDIR)/minerd-hash.Tpo -c -o minerd-hash.o `test -f 'x5/echo512/ccalik/aesni/hash.c' || echo '$(srcdir)/'`x5/echo512/ccalik/aesni/hash.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/minerd-hash.Tpo $(DEPDIR)/minerd-hash.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='x5/echo512/ccalik/aesni/hash.c' object='minerd-hash.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o minerd-hash.o `test -f 'x5/echo512/ccalik/aesni/hash.c' || echo '$(srcdir)/'`x5/echo512/ccalik/aesni/hash.c
+
+minerd-hash.obj: x5/echo512/ccalik/aesni/hash.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT minerd-hash.obj -MD -MP -MF $(DEPDIR)/minerd-hash.Tpo -c -o minerd-hash.obj `if test -f 'x5/echo512/ccalik/aesni/hash.c'; then $(CYGPATH_W) 'x5/echo512/ccalik/aesni/hash.c'; else $(CYGPATH_W) '$(srcdir)/x5/echo512/ccalik/aesni/hash.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/minerd-hash.Tpo $(DEPDIR)/minerd-hash.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='x5/echo512/ccalik/aesni/hash.c' object='minerd-hash.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o minerd-hash.obj `if test -f 'x5/echo512/ccalik/aesni/hash.c'; then $(CYGPATH_W) 'x5/echo512/ccalik/aesni/hash.c'; else $(CYGPATH_W) '$(srcdir)/x5/echo512/ccalik/aesni/hash.c'; fi`
+
+minerd-hash-groestl.o: x6/groestl/aesni/hash-groestl.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT minerd-hash-groestl.o -MD -MP -MF $(DEPDIR)/minerd-hash-groestl.Tpo -c -o minerd-hash-groestl.o `test -f 'x6/groestl/aesni/hash-groestl.c' || echo '$(srcdir)/'`x6/groestl/aesni/hash-groestl.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/minerd-hash-groestl.Tpo $(DEPDIR)/minerd-hash-groestl.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='x6/groestl/aesni/hash-groestl.c' object='minerd-hash-groestl.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o minerd-hash-groestl.o `test -f 'x6/groestl/aesni/hash-groestl.c' || echo '$(srcdir)/'`x6/groestl/aesni/hash-groestl.c
+
+minerd-hash-groestl.obj: x6/groestl/aesni/hash-groestl.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT minerd-hash-groestl.obj -MD -MP -MF $(DEPDIR)/minerd-hash-groestl.Tpo -c -o minerd-hash-groestl.obj `if test -f 'x6/groestl/aesni/hash-groestl.c'; then $(CYGPATH_W) 'x6/groestl/aesni/hash-groestl.c'; else $(CYGPATH_W) '$(srcdir)/x6/groestl/aesni/hash-groestl.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/minerd-hash-groestl.Tpo $(DEPDIR)/minerd-hash-groestl.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='x6/groestl/aesni/hash-groestl.c' object='minerd-hash-groestl.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o minerd-hash-groestl.obj `if test -f 'x6/groestl/aesni/hash-groestl.c'; then $(CYGPATH_W) 'x6/groestl/aesni/hash-groestl.c'; else $(CYGPATH_W) '$(srcdir)/x6/groestl/aesni/hash-groestl.c'; fi`
 
 minerd-xcoin.o: xcoin.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT minerd-xcoin.o -MD -MP -MF $(DEPDIR)/minerd-xcoin.Tpo -c -o minerd-xcoin.o `test -f 'xcoin.c' || echo '$(srcdir)/'`xcoin.c
